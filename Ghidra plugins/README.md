@@ -17,34 +17,7 @@ Technical reporting
 These tools are implemented as GhidraScripts (.java) for maximum compatibility.
 They run directly from Ghidra's Script Manager on any operating system without requiring Gradle builds or complex dependency setups.
 
-📁 Project Structure
-C:\Users\User\Desktop\Ghidra plugins\
-│
-├── README.md
-│
-├── data_hunting\
-│   ├── AIB_NetworkArtifactExtractor.java
-│   ├── AIB_CryptoDetector.java
-│   └── AIB_FileStructureParser.java
-│
-├── game_analysis\
-│   ├── AIB_RTTIVtableIdentifier.java
-│   ├── AIB_PointerChainHelper.java
-│   └── AIB_GameEngineFilter.java
-│
-├── report_automation\
-│   ├── AIB_TechnicalReportGenerator.java
-│   └── AIB_AuditTrailLogger.java
-│
-├── advanced_ops\
-│   ├── AIBUtils.java
-│   ├── AIB_SentinelAI.java
-│   ├── AIB_EntropyShield.java
-│   ├── AIB_GhostDecrypter.java
-│   └── AIB_CyberFlow.java
-│
-└── lib\
-    └── AIBUtils.java
+
 🚀 Installation Guide
 
 Installing the AIB Ghidra Plugin Suite is straightforward:
