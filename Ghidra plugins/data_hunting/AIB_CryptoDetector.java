@@ -185,6 +185,11 @@ public class AIB_CryptoDetector extends GhidraScript {
     @Override
     protected void run() throws Exception {
         printBanner();
+        String caseId = normalizeCaseId(askString(
+            "AIB - Case ID",
+            "Enter Case ID for export directory:",
+            "CASE_001"
+        ));
 
         Memory memory = currentProgram.getMemory();
         hits.clear();
@@ -268,7 +273,7 @@ public class AIB_CryptoDetector extends GhidraScript {
             labelAndBookmark();
 
             // Export
-            exportResults();
+            exportResults(caseId);
         }
 
         printFooter();
@@ -627,12 +632,9 @@ public class AIB_CryptoDetector extends GhidraScript {
     // EXPORT
     // ========================================================================
 
-    private void exportResults() throws Exception {
-        String progName = currentProgram.getName().replaceAll("[^a-zA-Z0-9._\\-]", "_");
+    private void exportResults(String caseId) throws Exception {
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String desktop = System.getProperty("user.home") + File.separator + "Desktop";
-        File outputDir = new File(desktop + File.separator + "AIB_Exports" + File.separator + progName);
-        if (!outputDir.exists()) outputDir.mkdirs();
+        File outputDir = getCaseExportDirectory(caseId);
 
         String jsonPath = outputDir.getAbsolutePath() + File.separator +
             "crypto_detection_" + timestamp + ".json";
@@ -644,6 +646,7 @@ public class AIB_CryptoDetector extends GhidraScript {
             writer.write("    \"tool\": \"AIB Crypto Detector\",\n");
             writer.write("    \"version\": \"1.0.0\",\n");
             writer.write("    \"organization\": \"Arcy Intelligence Bureau\",\n");
+            writer.write("    \"case_id\": \"" + escJSON(caseId) + "\",\n");
             writer.write("    \"binary\": \"" + escJSON(currentProgram.getName()) + "\",\n");
             writer.write("    \"timestamp\": \"" + new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date()) + "\"\n");
             writer.write("  },\n");
@@ -738,6 +741,20 @@ public class AIB_CryptoDetector extends GhidraScript {
 
     private String formatAddr(Address addr) {
         return addr != null ? "0x" + addr.toString() : "0x????????";
+    }
+
+    private String normalizeCaseId(String input) {
+        if (input == null) return "CASE_001";
+        String normalized = input.trim().replaceAll("[^a-zA-Z0-9._\\-]", "_");
+        return normalized.isEmpty() ? "CASE_001" : normalized;
+    }
+
+    private File getCaseExportDirectory(String caseId) {
+        String desktop = System.getProperty("user.home") + File.separator + "Desktop";
+        File outputDir = new File(desktop + File.separator + "AIB_Cases" + File.separator +
+            caseId + File.separator + "exports");
+        if (!outputDir.exists()) outputDir.mkdirs();
+        return outputDir;
     }
 
     private String escJSON(String s) {

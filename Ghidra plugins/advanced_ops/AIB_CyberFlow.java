@@ -32,6 +32,7 @@ import java.util.*;
  * - Console-based ASCII call graph
  */
 public class AIB_CyberFlow extends GhidraScript {
+    private String currentCaseId = "CASE_001";
 
     // ========================================================================
     // DATA STRUCTURES
@@ -279,6 +280,11 @@ public class AIB_CyberFlow extends GhidraScript {
     @Override
     protected void run() throws Exception {
         AIBUtils.printPluginHeader(this, "AIB CyberFlow — Behavior Graph Visualization");
+        currentCaseId = AIBUtils.normalizeCaseId(askString(
+            "AIB CyberFlow - Case ID",
+            "Enter Case ID for exports:",
+            currentCaseId
+        ));
 
         String[] modes = {
             "Full Analysis + HTML Graph + DOT Export",
@@ -671,7 +677,7 @@ public class AIB_CyberFlow extends GhidraScript {
 
     private void exportGraph(Map<String, FuncNode> graph, List<BehaviorChain> chains,
             boolean doHTML, boolean doDOT) throws Exception {
-        File outputDir = AIBUtils.getOutputDirectory(this);
+        File outputDir = AIBUtils.getToolOutputDirectory(this, currentCaseId, "cyberflow");
         String timestamp = AIBUtils.getFileTimestamp();
 
         // Filter: only include classified functions and their direct connections
@@ -787,7 +793,7 @@ public class AIB_CyberFlow extends GhidraScript {
     // ========================================================================
 
     private void exportJSON(Map<String, FuncNode> graph, List<BehaviorChain> chains) throws Exception {
-        File outputDir = AIBUtils.getOutputDirectory(this);
+        File outputDir = AIBUtils.getToolOutputDirectory(this, currentCaseId, "cyberflow");
         String timestamp = AIBUtils.getFileTimestamp();
 
         Map<String, Object> report = new LinkedHashMap<>();

@@ -36,6 +36,7 @@ import java.util.*;
  * is version-sensitive and may require specific Ghidra APIs.
  */
 public class AIB_GhostDecrypter extends GhidraScript {
+    private String currentCaseId = "CASE_001";
 
     // ========================================================================
     // DATA STRUCTURES
@@ -139,6 +140,11 @@ public class AIB_GhostDecrypter extends GhidraScript {
     @Override
     protected void run() throws Exception {
         AIBUtils.printPluginHeader(this, "AIB GhostDecrypter — Emulation-Based String Decryption");
+        currentCaseId = AIBUtils.normalizeCaseId(askString(
+            "AIB GhostDecrypter - Case ID",
+            "Enter Case ID for exports:",
+            currentCaseId
+        ));
 
         String[] modes = {
             "Full Analysis (All Techniques)",
@@ -752,7 +758,7 @@ public class AIB_GhostDecrypter extends GhidraScript {
 
     private void exportResults(List<DecryptedString> decrypted, List<StackString> stacks,
             List<ResolvedAPIHash> hashes) throws Exception {
-        File outputDir = AIBUtils.getOutputDirectory(this);
+        File outputDir = AIBUtils.getToolOutputDirectory(this, currentCaseId, "ghost_decrypter");
         String timestamp = AIBUtils.getFileTimestamp();
 
         Map<String, Object> report = new LinkedHashMap<>();

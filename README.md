@@ -95,9 +95,19 @@ c:\Users\User\Desktop\Ghidra plugins\
 
 #### AIB SentinelAI
 - Path: `advanced_ops/AIB_SentinelAI.java`
-- Purpose: combines Ghidra decompilation context with external LLM providers for explanation, renaming assistance, threat classification, and defensive vulnerability review
-- Current providers in code: Gemini 2.5 Flash and Claude 3.5 Sonnet
-- Note: requires user-supplied API keys
+- Purpose: Combines Ghidra decompilation context with external LLM providers (Gemini 2.5 Flash & Claude 3.5 Sonnet) for explanation, renaming assistance, malware classification, and advanced zero-day static audits.
+- Local Analysis Layer: Synthesizes a premium static analysis dossier covering variant analysis, invariant validation, source-to-sink data flow, state-machine reviews, safe-pattern diffs, and cross-plugin bookmark correlations.
+- Dossier Enhancements: Features integrated sections for **Temporal Safety**, **Anticheat Surface**, and **Cross-Function Taint Analysis**.
+- Advanced Heuristic Engine (12 Categories): Locally scans decompiled pseudocode to identify critical vulnerability surfaces including:
+  * Memory Safety: *Use After Free (UAF)*, *Double Free*, *Pool Corruption*
+  * Type & Race States: *Type Confusion*, *TOCTOU Race Condition*, *Kernel Race Condition*
+  * Sizing & Stack: *Integer Overflow Chain*, *Uninitialized Stack Memory Use*
+  * Privilege & Kernel: *Kernel Object/Token Abuse*, *IOCTL Dispatch Attack Surface*, *Hypervisor Escape*, *Privilege Escalation*
+- CoT-Enhanced Vulnerability Scanner: Employs a multi-step Chain-of-Thought (CoT) reasoning model that outputs structured analysis JSONs complete with a `reasoning_steps` trail for analysts.
+- Executive Deep Zero-Day Sweep: Iterates through up to 120 binary functions, scoring candidates heuristically (including bonuses for kernel/anticheat patterns and `CRITICAL_IMMEDIATE` prioritization), and dispatches the top candidates for a comprehensive, LLM-generated Zero-Day Triage & Mitigation Report.
+- Safe Defensive PoC Generator: Produces safe, non-weaponized Markdown validation checklists and isolated telemetry harnesses for laboratory verification.
+- Mappings: Enrichments mapped dynamically to CWE, CAPEC, and MITRE ATT&CK taxonomies.
+- Note: Requires user-supplied API credentials.
 
 #### AIB Entropy Shield
 - Path: `advanced_ops/AIB_EntropyShield.java`
@@ -147,12 +157,12 @@ Several scripts also create bookmarks, rename symbols, or generate files on the 
 
 ## Output Paths
 
-This repository currently uses two export layouts depending on the script:
+This repository now centers exports under `Desktop\AIB_Cases\<Case_ID>\...`.
 
-- newer or case-driven scripts commonly write under `Desktop\AIB_Cases\<Case_ID>\...`
-- some scripts and shared utilities still write under `Desktop\AIB_Exports\...`
+- script and advanced-analysis results are organized under case-specific `exports` directories
+- shared global configuration for AI-assisted workflows is stored under `Desktop\AIB_Cases\_global\config\`
 
-If you want a single uniform output layout, that should be treated as a follow-up cleanup task rather than assumed behavior today.
+Some comments and legacy helper names may still mention older layouts, but the active pathing has been moved toward the case-based structure.
 
 ## Dependencies And Compatibility
 

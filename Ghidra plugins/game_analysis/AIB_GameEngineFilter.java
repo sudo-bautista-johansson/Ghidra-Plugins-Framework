@@ -99,6 +99,7 @@ public class AIB_GameEngineFilter extends GhidraScript {
             t("AIB — Case ID", "AIB — ID de Caso"),
             t("Enter Case ID:", "Ingrese ID de Caso:"), "CASE_001");
 
+        caseId = normalizeCaseId(caseId);
         initEngineSpecs();
         printBanner();
 
@@ -499,6 +500,12 @@ public class AIB_GameEngineFilter extends GhidraScript {
         if (s == null) return "";
         return s.replace("\\", "\\\\").replace("\"", "\\\"")
                 .replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t");
+    }
+
+    private String normalizeCaseId(String input) {
+        if (input == null) return "CASE_001";
+        String normalized = input.trim().replaceAll("[^a-zA-Z0-9._\\-]", "_");
+        return normalized.isEmpty() ? "CASE_001" : normalized;
     }
 
     private String repeat(String s, int count) {

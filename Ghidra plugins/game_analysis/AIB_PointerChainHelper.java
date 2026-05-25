@@ -109,6 +109,7 @@ public class AIB_PointerChainHelper extends GhidraScript {
         String caseId = askString(
             t("AIB — Case ID", "AIB — ID de Caso"),
             t("Enter Case ID:", "Ingrese ID de Caso:"), "CASE_001");
+        caseId = normalizeCaseId(caseId);
 
         // Address selection
         Address defaultAddr = currentAddress;
@@ -477,6 +478,12 @@ public class AIB_PointerChainHelper extends GhidraScript {
         if (s == null) return "";
         return s.replace("\\", "\\\\").replace("\"", "\\\"")
                 .replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t");
+    }
+
+    private String normalizeCaseId(String input) {
+        if (input == null) return "CASE_001";
+        String normalized = input.trim().replaceAll("[^a-zA-Z0-9._\\-]", "_");
+        return normalized.isEmpty() ? "CASE_001" : normalized;
     }
 
     private String repeat(String s, int count) {

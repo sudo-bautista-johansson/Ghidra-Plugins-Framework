@@ -40,7 +40,7 @@ import java.util.regex.*;
  *   - Exported as JSON (for OSINT tool ingestion)
  *   - Exported as CSV (for Documentation Officer)
  * 
- * Output: Desktop/AIB_Exports/<program_name>/
+ * Output: Desktop/AIB_Cases/<case_id>/exports/
  * ═══════════════════════════════════════════════════════════════════
  */
 public class AIB_NetworkArtifactExtractor extends GhidraScript {
@@ -145,6 +145,11 @@ public class AIB_NetworkArtifactExtractor extends GhidraScript {
     @Override
     protected void run() throws Exception {
         printBanner();
+        String caseId = normalizeCaseId(askString(
+            "AIB - Case ID",
+            "Enter Case ID for export directory:",
+            "CASE_001"
+        ));
 
         // Initialize regex patterns
         initPatterns();
@@ -217,16 +222,13 @@ public class AIB_NetworkArtifactExtractor extends GhidraScript {
         println("  [✓] Created " + bookmarkCount + " bookmarks (category: AIB_NET)");
 
         // Export files
-        String progName = sanitizeFilename(currentProgram.getName());
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String desktop = System.getProperty("user.home") + File.separator + "Desktop";
-        File outputDir = new File(desktop + File.separator + "AIB_Exports" + File.separator + progName);
-        if (!outputDir.exists()) outputDir.mkdirs();
+        File outputDir = getCaseExportDirectory(caseId);
 
         // Export JSON
         String jsonPath = outputDir.getAbsolutePath() + File.separator +
             "network_artifacts_" + timestamp + ".json";
-        exportJSON(artifactsByCategory, jsonPath);
+        exportJSON(artifactsByCategory, jsonPath, caseId);
         println("  [✓] JSON exported: " + jsonPath);
 
         // Export CSV
@@ -486,7 +488,7 @@ public class AIB_NetworkArtifactExtractor extends GhidraScript {
     // JSON EXPORT
     // ========================================================================
 
-    private void exportJSON(Map<String, List<Artifact>> results, String filepath) throws IOException {
+    private void exportJSON(Map<String, List<Artifact>> results, String filepath, String caseId) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(filepath), StandardCharsets.UTF_8))) {
             writer.write("{\n");
@@ -494,6 +496,7 @@ public class AIB_NetworkArtifactExtractor extends GhidraScript {
             writer.write("    \"tool\": \"AIB Network Artifact Extractor\",\n");
             writer.write("    \"version\": \"1.0.0\",\n");
             writer.write("    \"organization\": \"Arcy Intelligence Bureau\",\n");
+            writer.write("    \"case_id\": \"" + escJSON(caseId) + "\",\n");
             writer.write("    \"binary\": \"" + escJSON(currentProgram.getName()) + "\",\n");
             writer.write("    \"architecture\": \"" + escJSON(currentProgram.getLanguage().toString()) + "\",\n");
             writer.write("    \"timestamp\": \"" + new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date()) + "\",\n");
@@ -628,6 +631,20 @@ public class AIB_NetworkArtifactExtractor extends GhidraScript {
 
     private String sanitizeFilename(String name) {
         return name.replaceAll("[^a-zA-Z0-9._\\-]", "_");
+    }
+
+    private String normalizeCaseId(String input) {
+        if (input == null) return "CASE_001";
+        String normalized = input.trim().replaceAll("[^a-zA-Z0-9._\\-]", "_");
+        return normalized.isEmpty() ? "CASE_001" : normalized;
+    }
+
+    private File getCaseExportDirectory(String caseId) {
+        String desktop = System.getProperty("user.home") + File.separator + "Desktop";
+        File outputDir = new File(desktop + File.separator + "AIB_Cases" + File.separator +
+            caseId + File.separator + "exports");
+        if (!outputDir.exists()) outputDir.mkdirs();
+        return outputDir;
     }
 
     private String computeHash() {

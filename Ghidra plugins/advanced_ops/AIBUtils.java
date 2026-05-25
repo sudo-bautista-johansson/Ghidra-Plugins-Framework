@@ -393,18 +393,62 @@ public class AIBUtils extends GhidraScript {
     // OUTPUT DIRECTORY MANAGEMENT
     // ========================================================================
 
-    /**
-     * Gets or creates the AIB output directory for the current program.
-     * Structure: Desktop/AIB_Exports/<program_name>/
-     */
-    public static File getOutputDirectory(GhidraScript script) throws Exception {
-        String progName = sanitizeFilename(script.getCurrentProgram().getName());
+    public static String normalizeCaseId(String input) {
+        if (input == null) return "CASE_001";
+        String normalized = input.trim().replaceAll("[^a-zA-Z0-9._-]", "_").replaceAll("_+", "_");
+        return normalized.isEmpty() ? "CASE_001" : normalized;
+    }
+
+    public static File getGlobalDirectory() {
         String desktop = System.getProperty("user.home") + File.separator + "Desktop";
-        File outputDir = new File(desktop + File.separator + "AIB_Exports" + File.separator + progName);
+        File dir = new File(desktop + File.separator + "AIB_Cases" + File.separator + "_global");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir;
+    }
+
+    public static File getConfigDirectory() {
+        File dir = new File(getGlobalDirectory(), "config");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir;
+    }
+
+    public static File getCaseDirectory(String caseId) {
+        String desktop = System.getProperty("user.home") + File.separator + "Desktop";
+        File dir = new File(desktop + File.separator + "AIB_Cases" + File.separator + normalizeCaseId(caseId));
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir;
+    }
+
+    public static File getCaseExportDirectory(String caseId) {
+        File dir = new File(getCaseDirectory(caseId), "exports");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir;
+    }
+
+    public static File getToolOutputDirectory(GhidraScript script, String caseId, String toolName) throws Exception {
+        String safeToolName = sanitizeFilename(toolName);
+        String progName = sanitizeFilename(script.getCurrentProgram().getName());
+        File outputDir = new File(getCaseExportDirectory(caseId), safeToolName + File.separator + progName);
         if (!outputDir.exists()) {
             outputDir.mkdirs();
         }
         return outputDir;
+    }
+
+    /**
+     * Gets or creates the default AIB output directory for the current program.
+     * Structure: Desktop/AIB_Cases/CASE_001/exports/general/<program_name>/
+     */
+    public static File getOutputDirectory(GhidraScript script) throws Exception {
+        return getToolOutputDirectory(script, "CASE_001", "general");
     }
 
     /**
@@ -641,8 +685,7 @@ public class AIBUtils extends GhidraScript {
     @SuppressWarnings("unchecked")
     public static Map<String, String> loadAPIConfig() {
         Map<String, String> config = new LinkedHashMap<>();
-        String desktop = System.getProperty("user.home") + File.separator + "Desktop";
-        File configFile = new File(desktop + File.separator + "AIB_Exports" + File.separator + CONFIG_FILENAME);
+        File configFile = new File(getConfigDirectory(), CONFIG_FILENAME);
         if (configFile.exists()) {
             try (BufferedReader br = new BufferedReader(
                     new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8))) {
@@ -671,9 +714,7 @@ public class AIBUtils extends GhidraScript {
      * Saves the AIB API configuration.
      */
     public static void saveAPIConfig(Map<String, String> config) throws IOException {
-        String desktop = System.getProperty("user.home") + File.separator + "Desktop";
-        File dir = new File(desktop + File.separator + "AIB_Exports");
-        if (!dir.exists()) dir.mkdirs();
+        File dir = getConfigDirectory();
         File configFile = new File(dir, CONFIG_FILENAME);
         Map<String, Object> wrapped = new LinkedHashMap<>(config);
         exportToJSON(wrapped, configFile.getAbsolutePath());
@@ -1052,6 +1093,6 @@ public class AIBUtils extends GhidraScript {
         println("  11. AIB_GhostDecrypter            — Emulation-based string decryption");
         println("  12. AIB_CyberFlow                 — Behavior graph visualization");
         println("");
-        println("All exports are saved to: Desktop/AIB_Exports/<program_name>/");
+        println("All exports are saved under: Desktop/AIB_Cases/<Case_ID>/exports/");
     }
 }

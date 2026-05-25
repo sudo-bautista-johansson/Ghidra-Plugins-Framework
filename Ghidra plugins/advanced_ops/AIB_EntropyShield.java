@@ -35,6 +35,7 @@ import java.util.*;
  * - Full JSON export with confidence scores
  */
 public class AIB_EntropyShield extends GhidraScript {
+    private String currentCaseId = "CASE_001";
 
     // ========================================================================
     // DATA STRUCTURES
@@ -199,6 +200,11 @@ public class AIB_EntropyShield extends GhidraScript {
     @Override
     protected void run() throws Exception {
         AIBUtils.printPluginHeader(this, "AIB EntropyShield — Entropy & Anti-Analysis Detection");
+        currentCaseId = AIBUtils.normalizeCaseId(askString(
+            "AIB EntropyShield - Case ID",
+            "Enter Case ID for exports:",
+            currentCaseId
+        ));
 
         // Choose analysis mode
         String[] modes = {
@@ -852,7 +858,7 @@ public class AIB_EntropyShield extends GhidraScript {
 
     private void exportResults(List<EntropyResult> entropy, List<AntiAnalysisHit> anti,
             List<String> packers) throws Exception {
-        File outputDir = AIBUtils.getOutputDirectory(this);
+        File outputDir = AIBUtils.getToolOutputDirectory(this, currentCaseId, "entropy_shield");
         String timestamp = AIBUtils.getFileTimestamp();
 
         // Build JSON data
