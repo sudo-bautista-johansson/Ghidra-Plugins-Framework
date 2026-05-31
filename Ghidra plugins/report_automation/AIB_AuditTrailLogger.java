@@ -140,11 +140,11 @@ public class AIB_AuditTrailLogger extends GhidraScript {
             Address addr = cu.getMinAddress();
             String addrStr = "0x" + addr.toString();
 
-            checkComment(cu, CodeUnit.PLATE_COMMENT, addrStr + ":PLATE");
-            checkComment(cu, CodeUnit.PRE_COMMENT, addrStr + ":PRE");
-            checkComment(cu, CodeUnit.POST_COMMENT, addrStr + ":POST");
-            checkComment(cu, CodeUnit.EOL_COMMENT, addrStr + ":EOL");
-            checkComment(cu, CodeUnit.REPEATABLE_COMMENT, addrStr + ":REPEATABLE");
+            checkComment(cu, CommentType.PLATE, addrStr + ":PLATE");
+            checkComment(cu, CommentType.PRE, addrStr + ":PRE");
+            checkComment(cu, CommentType.POST, addrStr + ":POST");
+            checkComment(cu, CommentType.EOL, addrStr + ":EOL");
+            checkComment(cu, CommentType.REPEATABLE, addrStr + ":REPEATABLE");
         }
 
         // Capture Bookmarks
@@ -156,7 +156,7 @@ public class AIB_AuditTrailLogger extends GhidraScript {
         }
     }
 
-    private void checkComment(CodeUnit cu, int commentType, String key) {
+    private void checkComment(CodeUnit cu, CommentType commentType, String key) {
         String comment = cu.getComment(commentType);
         if (comment != null && !comment.trim().isEmpty()) {
             currentComments.put(key, comment);

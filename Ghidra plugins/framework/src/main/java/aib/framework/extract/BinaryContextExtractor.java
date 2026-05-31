@@ -13,7 +13,7 @@ import ghidra.program.model.listing.FunctionIterator;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.InstructionIterator;
 import ghidra.program.model.listing.Program;
-import ghidra.program.model.listing.ReferenceManager;
+import ghidra.program.model.symbol.ReferenceManager;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.symbol.Reference;
 import ghidra.util.exception.CancelledException;

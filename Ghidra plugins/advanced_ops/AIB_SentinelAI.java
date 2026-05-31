@@ -17,6 +17,7 @@ import ghidra.program.model.listing.Parameter;
 import ghidra.program.model.symbol.SourceType;
 import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.BookmarkManager;
+import ghidra.program.model.listing.CommentType;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -84,6 +85,7 @@ public class AIB_SentinelAI extends GhidraScript {
         // Show main menu
         List<String> menuChoices = new ArrayList<>();
         menuChoices.add("ðŸ§  Explain Selected Function");
+        menuChoices.add("ðŸ”¥ TITAN-VR Elite Vulnerability & RE Analysis");
         menuChoices.add("âœ ï¸  Auto-Rename Selected Function & Variables");
         menuChoices.add("ðŸ¦  Malware & Threat Classification (Global)");
         menuChoices.add("ðŸ”“ Scan Selected Function for Vulnerabilities (Advanced CoT)");
@@ -97,6 +99,8 @@ public class AIB_SentinelAI extends GhidraScript {
 
         if (selectedOption.contains("Explain Selected Function")) {
             explainCurrentFunction();
+        } else if (selectedOption.contains("TITAN-VR Elite Vulnerability & RE Analysis")) {
+            titanVRAnalysis();
         } else if (selectedOption.contains("Auto-Rename Selected Function")) {
             autoRenameCurrentFunction();
         } else if (selectedOption.contains("Threat Classification")) {
@@ -265,8 +269,155 @@ public class AIB_SentinelAI extends GhidraScript {
         // Add plate comment to the function
         try {
             currentProgram.getListing().setComment(currentFunc.getEntryPoint(), 
-                CodeUnit.PLATE_COMMENT, 
+                CommentType.PLATE, 
                 "âš¡ AIB SentinelAI Analysis:\n" + truncateForComment(response));
+            AIBUtils.printResult(this, "Plate comment added to function start", AIBUtils.formatAddress(currentFunc.getEntryPoint()));
+        } catch (Exception e) {
+            AIBUtils.printWarning(this, "Failed to apply plate comment: " + e.getMessage());
+        }
+    }
+
+    private void titanVRAnalysis() throws Exception {
+        Function currentFunc = getFunctionContaining(currentAddress);
+        if (currentFunc == null) {
+            printerr("No function selected. Please place your cursor inside a function.");
+            return;
+        }
+
+        println("  [ðŸ”¥] Executing TITAN-VR Elite Vulnerability & Reverse Engineering Analysis...");
+        String cCode = decompileFunction(currentFunc);
+        if (cCode == null || cCode.trim().isEmpty()) {
+            printerr("Could not retrieve decompiler output for: " + currentFunc.getName());
+            return;
+        }
+
+        String prompt = "You are TITAN-VR, an elite Vulnerability Research and Reverse Engineering AI.\n\n"
+            + "PURPOSE\n\n"
+            + "Your purpose is to assist security researchers, reverse engineers, malware analysts, software auditors, and CTF participants in understanding software, identifying potential vulnerabilities, analyzing binaries, and conducting technical security research.\n\n"
+            + "CORE CAPABILITIES\n\n"
+            + "- Reverse Engineering\n"
+            + "- Binary Analysis\n"
+            + "- Static Analysis\n"
+            + "- Dynamic Analysis Interpretation\n"
+            + "- Crash Analysis\n"
+            + "- Fuzzing Guidance\n"
+            + "- Vulnerability Discovery\n"
+            + "- Secure Code Review\n"
+            + "- Malware Analysis\n"
+            + "- Protocol Analysis\n"
+            + "- Operating System Internals\n"
+            + "- Compiler Behavior Analysis\n"
+            + "- Memory Management Analysis\n"
+            + "- Technical Report Generation\n\n"
+            + "RESEARCH PROCESS\n\n"
+            + "For every analysis:\n\n"
+            + "1. Understand the target.\n"
+            + "2. Identify trust boundaries.\n"
+            + "3. Map inputs and outputs.\n"
+            + "4. Trace data flow.\n"
+            + "5. Trace control flow.\n"
+            + "6. Identify memory operations.\n"
+            + "7. Search for dangerous assumptions.\n"
+            + "8. Evaluate privilege transitions.\n"
+            + "9. Evaluate attacker-controlled inputs.\n"
+            + "10. Produce evidence-based conclusions.\n\n"
+            + "VULNERABILITY RESEARCH\n\n"
+            + "Investigate the possibility of:\n\n"
+            + "- Buffer Overflows\n"
+            + "- Integer Overflows\n"
+            + "- Integer Underflows\n"
+            + "- Out-of-Bounds Access\n"
+            + "- Use-After-Free\n"
+            + "- Double Free\n"
+            + "- Type Confusion\n"
+            + "- Race Conditions\n"
+            + "- Logic Flaws\n"
+            + "- Authentication Issues\n"
+            + "- Authorization Issues\n"
+            + "- Deserialization Bugs\n"
+            + "- Parser Bugs\n"
+            + "- Memory Corruption\n"
+            + "- Cryptographic Misuse\n"
+            + "- Resource Exhaustion\n"
+            + "- Sandbox Escapes\n"
+            + "- Privilege Escalation Conditions\n\n"
+            + "ANALYSIS REQUIREMENTS\n\n"
+            + "Never assume a vulnerability exists.\n\n"
+            + "Every finding must include:\n\n"
+            + "- Finding Name\n"
+            + "- Technical Description\n"
+            + "- Root Cause\n"
+            + "- Attack Surface\n"
+            + "- Impact Assessment\n"
+            + "- Confidence Score\n"
+            + "- Supporting Evidence\n"
+            + "- Contradicting Evidence\n"
+            + "- Validation Strategy\n"
+            + "- Similar Vulnerability Classes\n"
+            + "- Related CWE Categories\n\n"
+            + "REVERSE ENGINEERING MODE\n\n"
+            + "When analyzing binaries:\n\n"
+            + "- Reconstruct program behavior.\n"
+            + "- Infer undocumented functionality.\n"
+            + "- Explain algorithms.\n"
+            + "- Reconstruct structures.\n"
+            + "- Analyze memory management.\n"
+            + "- Identify anti-debugging.\n"
+            + "- Identify anti-analysis techniques.\n"
+            + "- Detect obfuscation.\n"
+            + "- Infer developer intent.\n\n"
+            + "0-DAY RESEARCH MODE\n\n"
+            + "When evidence suggests a previously undocumented vulnerability:\n\n"
+            + "- Mark it as POTENTIAL.\n"
+            + "- Explain the reasoning.\n"
+            + "- Explain alternative explanations.\n"
+            + "- Estimate confidence.\n"
+            + "- Recommend additional validation.\n"
+            + "- Never present speculation as fact.\n\n"
+            + "OUTPUT STYLE\n\n"
+            + "Produce professional-grade technical reports.\n\n"
+            + "Use:\n\n"
+            + "- Executive Summary\n"
+            + "- Technical Analysis\n"
+            + "- Evidence\n"
+            + "- Risk Assessment\n"
+            + "- Confidence Assessment\n"
+            + "- Research Notes\n"
+            + "- Recommended Next Steps\n\n"
+            + "Be skeptical.\n"
+            + "Be evidence-driven.\n"
+            + "Be technically rigorous.\n"
+            + "Be transparent about uncertainty.\n\n"
+            + "=== TARGET FUNCTION DECOMPILED C CODE ===\n"
+            + "```c\n" + cCode + "\n```\n\n"
+            + "=== ADDITIONAL CONTEXT (HEURISTICS) ===\n"
+            + buildDeepFunctionContext(currentFunc, cCode);
+
+        String response = sendLLMRequest(prompt);
+        if (response == null) {
+            printerr("LLM API returned an empty or invalid response.");
+            return;
+        }
+
+        AIBUtils.printSection(this, "TITAN-VR ELITE SECURITY ASSESSMENT REPORT");
+        println(response);
+
+        // Save report to file
+        File outputDir = getSentinelOutputDirectory();
+        String cleanFuncName = AIBUtils.sanitizeFilename(currentFunc.getName());
+        File reportFile = new File(outputDir, "titan_vr_" + cleanFuncName + "_" + AIBUtils.getFileTimestamp() + ".md");
+        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(reportFile), StandardCharsets.UTF_8))) {
+            bw.write("# TITAN-VR Elite Security Assessment â€” " + currentFunc.getName() + "\n");
+            bw.write("Date: " + AIBUtils.getTimestamp() + "\n\n");
+            bw.write(response);
+        }
+        AIBUtils.printResult(this, "TITAN-VR Elite report saved", reportFile.getAbsolutePath());
+
+        // Add plate comment to the function
+        try {
+            currentProgram.getListing().setComment(currentFunc.getEntryPoint(), 
+                CommentType.PLATE, 
+                "âš¡ TITAN-VR Elite Analysis:\n" + truncateForComment(response));
             AIBUtils.printResult(this, "Plate comment added to function start", AIBUtils.formatAddress(currentFunc.getEntryPoint()));
         } catch (Exception e) {
             AIBUtils.printWarning(this, "Failed to apply plate comment: " + e.getMessage());

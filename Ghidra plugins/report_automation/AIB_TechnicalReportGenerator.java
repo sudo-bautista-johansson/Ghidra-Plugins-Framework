@@ -221,16 +221,16 @@ public class AIB_TechnicalReportGenerator extends GhidraScript {
             CodeUnit cu = it.next();
             
             // Collect various comment types
-            checkAndAddComment(list, cu, CodeUnit.PLATE_COMMENT, "PLATE");
-            checkAndAddComment(list, cu, CodeUnit.PRE_COMMENT, "PRE");
-            checkAndAddComment(list, cu, CodeUnit.POST_COMMENT, "POST");
-            checkAndAddComment(list, cu, CodeUnit.EOL_COMMENT, "EOL");
-            checkAndAddComment(list, cu, CodeUnit.REPEATABLE_COMMENT, "REPEATABLE");
+            checkAndAddComment(list, cu, CommentType.PLATE, "PLATE");
+            checkAndAddComment(list, cu, CommentType.PRE, "PRE");
+            checkAndAddComment(list, cu, CommentType.POST, "POST");
+            checkAndAddComment(list, cu, CommentType.EOL, "EOL");
+            checkAndAddComment(list, cu, CommentType.REPEATABLE, "REPEATABLE");
         }
         return list;
     }
 
-    private void checkAndAddComment(List<CommentEntry> list, CodeUnit cu, int commentType, String typeStr) {
+    private void checkAndAddComment(List<CommentEntry> list, CodeUnit cu, CommentType commentType, String typeStr) {
         String comment = cu.getComment(commentType);
         if (comment != null && !comment.trim().isEmpty()) {
             // Find context (containing function)

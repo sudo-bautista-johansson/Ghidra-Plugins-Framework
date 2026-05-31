@@ -284,7 +284,7 @@ public class AIB_GhostDecrypter extends GhidraScript {
                                 ds.address.replace("0x", ""));
                             if (addr != null) {
                                 currentProgram.getListing().setComment(addr,
-                                    CodeUnit.PRE_COMMENT,
+                                    CommentType.PRE,
                                     "GHOST_DECRYPTED: \"" + ds.plaintext + "\"");
                                 currentProgram.getBookmarkManager().setBookmark(addr,
                                     "Analysis", "DECRYPTED",
@@ -443,9 +443,9 @@ public class AIB_GhostDecrypter extends GhidraScript {
 
                             // Add Ghidra comment
                             try {
-                                currentProgram.getListing().setComment(addr,
-                                    CodeUnit.PRE_COMMENT,
-                                    "GHOST_DECRYPTED (XOR " + ds.key + "): \"" + str + "\"");
+                                 currentProgram.getListing().setComment(addr,
+                                     CommentType.PRE,
+                                     "GHOST_DECRYPTED (XOR " + ds.key + "): \"" + str + "\"");
                                 currentProgram.getBookmarkManager().setBookmark(addr,
                                     "Analysis", "DECRYPTED",
                                     "[XOR_DECRYPT] key=" + ds.key + " → " + str);
@@ -531,8 +531,8 @@ public class AIB_GhostDecrypter extends GhidraScript {
                         // Add comment
                         try {
                             currentProgram.getListing().setComment(firstAddr,
-                                CodeUnit.PRE_COMMENT,
-                                "GHOST_STACK_STRING: \"" + str + "\"");
+                                 CommentType.PRE,
+                                 "GHOST_STACK_STRING: \"" + str + "\"");
                             currentProgram.getBookmarkManager().setBookmark(firstAddr,
                                 "Analysis", "DECRYPTED",
                                 "[STACK_STRING] " + str);
@@ -644,7 +644,7 @@ public class AIB_GhostDecrypter extends GhidraScript {
                     // Add comment
                     try {
                         currentProgram.getListing().setComment(addr,
-                            CodeUnit.EOL_COMMENT,
+                            CommentType.EOL,
                             "API_HASH[" + algorithm + "]: " + resolvedName);
                         currentProgram.getBookmarkManager().setBookmark(addr,
                             "Analysis", "DECRYPTED",
